@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+</head>
+<body>
+    <h2 id="roomTitle">Room</h2>
+    <p id="onlineUsers"> Online Users : 0</p>
+    <p id="currentUser"></p>
+    <p id="roomLink"></p>
+    <button onclick="copyRoomLink()">Copy Link</button>
+
+    <div id="messages" style="height:300px; overflow:auto; border:1px solid #ccc;"></div>
+    <p id="typingIndicator"></p>
+
+
+    <input type="text" id="messageInput" placeholder="Type Message">
+    <button onclick="sendMessage()">Send</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+</body>
+<script>
+    const name = prompt("Enter You User Name"); 
+    document.getElementById('currentUser').innerHTML = `
+        Username : ${name}
+    `
+
+    const socket = io();
+
+    let typingTimeout;
+    document.getElementById("messageInput").addEventListener("input", ()=>{
+            socket.emit("typing", {
+                roomCode,
+                user : name
+            });
+        });
+    
+    const urlFullLink = new URL(window.location.href)
+    const pathParts =  urlFullLink.pathname.split('/').filter(Boolean) //It filters the empty part of URL and 2nd element of array is roomName.(Easy to update)
+
+    const roomName = decodeURIComponent(pathParts[1])
+    const roomCode = pathParts[2]
+
+    document.getElementById('roomTitle').innerHTML = "Room : " + roomName;  
+    document.getElementById('roomLink').innerHTML = urlFullLink.href;
+
+    socket.emit("join-room", roomCode, name)
+
+    fetch(`/api/messages/${roomCode}`)
+    .then(res => res.json())
+    .then(messages => {
+        const messageDiv = document.getElementById('messages');
+
+        messages.forEach(message => {
+            const p = document.createElement('p');
+            p.innerHTML = `${message.sender} : ${message.text}`
+
+            messageDiv.appendChild(p);
+        })
+    })
+
+
+    function sendMessage(){
+        const sender = name
+        const text = document.getElementById("messageInput").value 
+        
+        socket.emit("send-message", {
+            roomCode,
+            sender,
+            text
+        });
+
+        
+        document.getElementById("messageInput").value = "";
+
+    }
+    socket.on("receive-message", (data)=>{
+        const msg = document.getElementById("messages")
+        
+        const para = document.createElement("p")
+        para.innerHTML = `${data.sender} : ${data.text}`
+        
+        msg.appendChild(para);
+    });
+
+    socket.on("user-joined", (data)=>{
+        const msg = document.getElementById("messages")
+
+        const p = document.createElement("p");
+        p.innerText = `${data.user} joined the Room`;
+
+        msg.appendChild(p)
+    });  
+
+    socket.on("show-typing", (data)=>{
+        const typingDiv = document.getElementById("typingIndicator");
+        typingDiv.innerHTML = `${data.user} is typing...`
+
+        clearTimeout(typingTimeout);
+        
+        typingTimeout = setTimeout(()=>{
+            typingDiv.innerHTML = "";
+        }, 3000);
+    });
+
+    socket.on("online-users", (data)=>{
+        document.getElementById("onlineUsers").innerHTML = `Online Users : ${data.count}`
+    })
+
+    function copyRoomLink(){
+        navigator.clipboard.writeText(window.location.href)
+        alert("Room Link Copied")
+    }
+
+</script>
+</html>

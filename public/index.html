@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Time Chat App</title>
+</head>
+<body>
+    <h1>Real-Time Chat Application</h1>
+
+    <input type="text" id="roomName" placeholder="Enter Room Name">
+    <button onclick="createRoom()"> + Create Room</button>
+
+    <div id="rooms"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+</body>
+<script>
+    const socket = io();
+
+    socket.on("new-room-created", () => {
+        getRooms();
+    });
+    async function getRooms() {
+        const res = await fetch("/api/rooms")
+        const data = await res.json()
+
+        const roomsDiv = document.getElementById('rooms')
+        roomsDiv.innerHTML = "";
+
+        (data.rooms || []).forEach(room =>{
+            const roomElement =  document.createElement('div');
+
+            roomElement.innerHTML = `
+                <p> 
+                    ${room.name}
+                    <a href="/room/${room.name}/${room.roomCode}">
+                        Join
+                    </a>       
+                </p>
+            `
+
+            roomsDiv.appendChild(roomElement);
+        });
+    }
+
+    function copyLink(roomName, roomCode){
+        const link = `${window.location.origin}/room/${room.Name}/${room.roomCode}`;
+
+        navigator.clipboard.writeText(link)
+
+        alert("Room Link Copied!")
+    }
+
+    async function createRoom(){
+        const roomName = document.getElementById('roomName').value;
+
+        await fetch("/api/rooms/create", {
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            body : JSON.stringify({
+                name : roomName
+            })
+        });
+        document.getElementById("roomName").value = "";
+        getRooms();
+    }
+
+    getRooms();
+</script>
+</html>
