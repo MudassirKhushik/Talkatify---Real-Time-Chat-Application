@@ -13,9 +13,7 @@ import Message from "./models/Message.js";
 import path from "path";
 import { setUncaughtExceptionCaptureCallback } from "process";
 import Room from "./models/Room.js";
-import { startRoomCleanupJon } from "./jobs/deleteInactiveRooms.js";
-import redisClient from "./config/redis.js";
-import "./services/roomExpiration.js";
+import { startRoomCleanupJob } from "./jobs/deleteInactiveRooms.js";
 
 dotenv.config();
 
@@ -74,11 +72,6 @@ io.on('connection', (socket) => {
                 { lastActive : new Date() }
             );
 
-            await redisClient.expire(
-                `room:${roomCode}`,
-                120
-            )
-
             io.to(roomCode).emit("receive-message", newMessage)
             
         }catch(error){
@@ -118,7 +111,7 @@ mongoose.connect(process.env.MongoURI, {
 .then(()=> console.log("Mongo DB connected"))
 .catch((err)=> console.log("Mongo Error : " + err))
 
-startRoomCleanupJon();
+startRoomCleanupJob();
 
 app.use('/api/rooms', roomRoutes)
 app.use('/api/messages', messageRoutes)
