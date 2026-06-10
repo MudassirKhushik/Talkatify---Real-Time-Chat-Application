@@ -1,0 +1,14 @@
+services:
+  talkatify:
+    build: .
+    container_name: talkatify
+
+
+    ports:
+     - "5000:5000"
+
+
+    env_file:
+      - .env
+
+    restart: unless-stopped   
