@@ -28,6 +28,5 @@ jobs:
           ssh root@${{ secrets.HOST }} << 'EOF'
             cd ~/Talkatify---Real-Time-Chat-Application
             git pull origin main
-            docker-compose down
             docker-compose up -d --build
           EOF
