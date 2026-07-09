@@ -27,6 +27,7 @@ jobs:
         run: |
           ssh root@${{ secrets.HOST }} << 'EOF'
             set -e
+
             cd ~/Talkatify---Real-Time-Chat-Application
 
             git fetch origin
@@ -36,4 +37,4 @@ jobs:
             docker compose up -d --build
 
             docker image prune -f
-            EOF
+          EOF
