@@ -26,9 +26,14 @@ jobs:
       - name: Deploy
         run: |
           ssh root@${{ secrets.HOST }} << 'EOF'
+            set -e
             cd ~/Talkatify---Real-Time-Chat-Application
+
             git fetch origin
             git reset --hard origin/main
-            docker-compose up -d --build --force-recreate
+
+            docker compose down
+            docker compose up -d --build
+
             docker image prune -f
-          EOF
+            EOF
