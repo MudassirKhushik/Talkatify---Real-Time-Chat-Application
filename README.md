@@ -85,12 +85,20 @@ The application is deployed on a DigitalOcean Droplet using Docker and Docker Co
 
 
 ## 📸 Screenshots
+
+### Google Search
+
+<img width="1652" height="881" alt="talkatifyGoogle" src="https://github.com/user-attachments/assets/17ac837e-33f0-4c84-9f35-524191340d87" />
+
+
 ### Home Page
-<img width="943" height="776" alt="HomePage" src="https://github.com/user-attachments/assets/d7b81c4c-7d46-4d6d-a8a7-430dd6ff5c8f" />
+
+<img width="1294" height="1034" alt="Home" src="https://github.com/user-attachments/assets/3edf9079-3cb4-43a8-8dfb-07134d8b9966" />
 
 ### Chat Room
 
-<img width="1596" height="1036" alt="ChatRoom" src="https://github.com/user-attachments/assets/fa4297f8-8707-467a-8e45-5a6a1d75cc2f" />
+<img width="1300" height="1033" alt="Room" src="https://github.com/user-attachments/assets/501502d6-6e4c-4b36-958c-7c8bb921b68d" />
+
 
 ## 🔮 Future Improvements
 
